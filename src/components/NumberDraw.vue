@@ -1,4 +1,4 @@
-<!-- src/components/NumberDraw.vue -->
+# NumberDraw.vue
 <template>
   <div class="number-draw-container">
     <el-card class="box-card">
@@ -30,6 +30,7 @@
                 'drawn': drawnNumbers.includes(num),
                 'last-drawn': num === lastDrawnNumber
               }"
+              @click="handleNumberClick(num)"
           >
             {{ num }}
           </div>
@@ -69,6 +70,22 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 手動選擇確認對話框 -->
+    <el-dialog
+        v-model="manualSelectDialogVisible"
+        title="確認選擇"
+        width="300px"
+        center
+    >
+      <span>確定要選擇號碼 {{ selectedNumber }} 嗎？</span>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="manualSelectDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="confirmManualSelect">確定選擇</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -82,6 +99,8 @@ export default {
     const lastDrawnNumber = ref(null)
     const remainingNumbers = ref([])
     const dialogVisible = ref(false)
+    const manualSelectDialogVisible = ref(false)
+    const selectedNumber = ref(null)
 
     const initializeGame = () => {
       remainingNumbers.value = Array.from({length: 25}, (_, i) => i + 1)
@@ -111,12 +130,30 @@ export default {
       saveState()
     }
 
-    // 打開重置確認對話框
+    // 處理點擊數字
+    const handleNumberClick = (num) => {
+      if (!drawnNumbers.value.includes(num) && remainingNumbers.value.includes(num)) {
+        selectedNumber.value = num
+        manualSelectDialogVisible.value = true
+      }
+    }
+
+    // 確認手動選擇
+    const confirmManualSelect = () => {
+      const index = remainingNumbers.value.indexOf(selectedNumber.value)
+      if (index !== -1) {
+        remainingNumbers.value.splice(index, 1)
+        drawnNumbers.value.push(selectedNumber.value)
+        lastDrawnNumber.value = selectedNumber.value
+        saveState()
+      }
+      manualSelectDialogVisible.value = false
+    }
+
     const confirmReset = () => {
       dialogVisible.value = true
     }
 
-    // 確認重置後的處理
     const handleReset = () => {
       localStorage.removeItem('numberDrawState')
       initializeGame()
@@ -142,8 +179,12 @@ export default {
       remainingNumbers,
       drawNumber,
       dialogVisible,
+      manualSelectDialogVisible,
+      selectedNumber,
       confirmReset,
-      handleReset
+      handleReset,
+      handleNumberClick,
+      confirmManualSelect
     }
   }
 }
@@ -220,18 +261,26 @@ export default {
   background-color: #fff;
   height: 50px;
   width: 100px;
+  cursor: pointer;
+}
+
+.number-box:not(.drawn):hover {
+  border-color: #409EFF;
+  color: #409EFF;
 }
 
 .number-box.drawn {
   background-color: #409EFF;
   color: white;
   border-color: #409EFF;
+  cursor: not-allowed;
 }
 
 .number-box.last-drawn {
   background-color: #F56C6C;
   color: white;
   border-color: #F56C6C;
+  cursor: not-allowed;
 }
 
 :deep(.el-card__header) {
