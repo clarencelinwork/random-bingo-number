@@ -4,7 +4,7 @@
     <el-card class="box-card">
       <template #header>
         <div class="card-header">
-          <h2>抽號碼系統</h2>
+          <h2>賓果抽號碼</h2>
           <div class="button-group">
             <el-button type="primary" size="large" @click="drawNumber" :disabled="remainingNumbers.length === 0">
               抽號碼
