@@ -26,7 +26,10 @@
               v-for="num in 25"
               :key="num"
               class="number-box"
-              :class="{ 'drawn': drawnNumbers.includes(num) }"
+              :class="{
+                'drawn': drawnNumbers.includes(num),
+                'last-drawn': num === lastDrawnNumber
+              }"
           >
             {{ num }}
           </div>
@@ -131,9 +134,9 @@ export default {
 
 <style scoped>
 .number-draw-container {
-  max-width: 700px;
+  max-width: 650px;
   margin: 0 auto;
-  padding: 15px;
+  padding: 10px;
 }
 
 .card-header {
@@ -193,19 +196,25 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 30px;
+  font-size: 28px;
   border: 1px solid #dcdfe6;
   border-radius: 4px;
   transition: all 0.3s;
   background-color: #fff;
-  height: 60px;
-  width: 110px;
+  height: 50px;
+  width: 100px;
 }
 
 .number-box.drawn {
   background-color: #409EFF;
   color: white;
   border-color: #409EFF;
+}
+
+.number-box.last-drawn {
+  background-color: #F56C6C;
+  color: white;
+  border-color: #F56C6C;
 }
 
 :deep(.el-card__header) {
