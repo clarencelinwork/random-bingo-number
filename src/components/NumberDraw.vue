@@ -6,10 +6,10 @@
         <div class="card-header">
           <h2>抽號碼系統</h2>
           <div class="button-group">
-            <el-button type="primary" @click="drawNumber" :disabled="remainingNumbers.length === 0">
+            <el-button type="primary" size="large" @click="drawNumber" :disabled="remainingNumbers.length === 0">
               抽號碼
             </el-button>
-            <el-button type="danger" @click="resetGame">重置</el-button>
+            <el-button type="danger" size="large" @click="confirmReset">重置</el-button>
           </div>
         </div>
       </template>
@@ -33,6 +33,22 @@
         </div>
       </div>
     </el-card>
+
+    <!-- 重置確認對話框 -->
+    <el-dialog
+        v-model="dialogVisible"
+        title="確認重置"
+        width="300px"
+        center
+    >
+      <span>確定要重置所有號碼嗎？</span>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="danger" @click="handleReset">確定重置</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -45,6 +61,7 @@ export default {
     const drawnNumbers = ref([])
     const lastDrawnNumber = ref(null)
     const remainingNumbers = ref([])
+    const dialogVisible = ref(false)
 
     const initializeGame = () => {
       remainingNumbers.value = Array.from({ length: 25 }, (_, i) => i + 1)
@@ -74,9 +91,16 @@ export default {
       saveState()
     }
 
-    const resetGame = () => {
+    // 打開重置確認對話框
+    const confirmReset = () => {
+      dialogVisible.value = true
+    }
+
+    // 確認重置後的處理
+    const handleReset = () => {
       localStorage.removeItem('numberDrawState')
       initializeGame()
+      dialogVisible.value = false
     }
 
     const saveState = () => {
@@ -97,7 +121,9 @@ export default {
       lastDrawnNumber,
       remainingNumbers,
       drawNumber,
-      resetGame
+      dialogVisible,
+      confirmReset,
+      handleReset
     }
   }
 }
@@ -188,5 +214,17 @@ export default {
 
 :deep(.el-card__body) {
   padding: 15px;
+}
+
+.dialog-footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+:deep(.el-button--large) {
+  padding: 15px 25px;
+  font-size: 16px;
 }
 </style>
