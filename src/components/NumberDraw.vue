@@ -35,6 +35,23 @@
           </div>
         </div>
       </div>
+
+      <hr class="divider"/>
+
+      <div class="draw-sequence">
+        <h3>抽出順序</h3>
+        <div class="sequence-list">
+          <el-tag
+              v-for="(num, index) in drawnNumbers"
+              :key="index"
+              :type="num === lastDrawnNumber ? 'danger' : 'primary'"
+              class="sequence-number"
+              size="large"
+          >
+            {{ num }}
+          </el-tag>
+        </div>
+      </div>
     </el-card>
 
     <!-- 重置確認對話框 -->
@@ -56,7 +73,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import {ref, onMounted} from 'vue'
 
 export default {
   name: 'NumberDraw',
@@ -67,7 +84,7 @@ export default {
     const dialogVisible = ref(false)
 
     const initializeGame = () => {
-      remainingNumbers.value = Array.from({ length: 25 }, (_, i) => i + 1)
+      remainingNumbers.value = Array.from({length: 25}, (_, i) => i + 1)
       drawnNumbers.value = []
       lastDrawnNumber.value = null
 
@@ -235,5 +252,38 @@ export default {
 :deep(.el-button--large) {
   padding: 15px 25px;
   font-size: 16px;
+}
+
+.draw-sequence {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.draw-sequence h3 {
+  margin: 0 0 10px 0;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.sequence-list {
+  display: grid;
+  grid-template-columns: repeat(9, auto);
+  gap: 10px;
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+.sequence-number {
+  font-size: 18px;
+  padding: 8px 15px;
+  font-weight: bold;
+}
+
+.divider {
+  margin: 20px 0;
+  border: none;
+  height: 1px;
+  background: #dcdfe6;
 }
 </style>
