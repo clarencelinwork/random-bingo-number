@@ -5,10 +5,12 @@
       <template #header>
         <div class="card-header">
           <h2>抽號碼系統</h2>
-          <el-button type="primary" @click="drawNumber" :disabled="remainingNumbers.length === 0">
-            抽號碼
-          </el-button>
-          <el-button type="danger" @click="resetGame">重置</el-button>
+          <div class="button-group">
+            <el-button type="primary" @click="drawNumber" :disabled="remainingNumbers.length === 0">
+              抽號碼
+            </el-button>
+            <el-button type="danger" @click="resetGame">重置</el-button>
+          </div>
         </div>
       </template>
 
@@ -30,43 +32,12 @@
           </div>
         </div>
       </div>
-
-      <div class="statistics">
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <div class="stat-item">
-              <h4>已抽出號碼</h4>
-              <el-tag
-                  v-for="num in drawnNumbers"
-                  :key="num"
-                  class="drawn-number-tag"
-              >
-                {{ num }}
-              </el-tag>
-            </div>
-          </el-col>
-          <el-col :span="12">
-            <div class="stat-item">
-              <h4>剩餘號碼</h4>
-              <el-tag
-                  v-for="num in remainingNumbers"
-                  :key="num"
-                  type="info"
-                  class="remaining-number-tag"
-              >
-                {{ num }}
-              </el-tag>
-            </div>
-          </el-col>
-        </el-row>
-      </div>
     </el-card>
   </div>
 </template>
 
 <script>
-import {ref, onMounted} from 'vue'
-import {ElMessage} from 'element-plus'
+import { ref, onMounted } from 'vue'
 
 export default {
   name: 'NumberDraw',
@@ -75,13 +46,11 @@ export default {
     const lastDrawnNumber = ref(null)
     const remainingNumbers = ref([])
 
-    // 初始化遊戲
     const initializeGame = () => {
-      remainingNumbers.value = Array.from({length: 25}, (_, i) => i + 1)
+      remainingNumbers.value = Array.from({ length: 25 }, (_, i) => i + 1)
       drawnNumbers.value = []
       lastDrawnNumber.value = null
 
-      // 從localStorage讀取之前的狀態
       const savedState = localStorage.getItem('numberDrawState')
       if (savedState) {
         const state = JSON.parse(savedState)
@@ -91,13 +60,8 @@ export default {
       }
     }
 
-    // 抽號碼
     const drawNumber = () => {
       if (remainingNumbers.value.length === 0) {
-        ElMessage({
-          message: '所有號碼都已抽完！',
-          type: 'warning'
-        })
         return
       }
 
@@ -107,26 +71,14 @@ export default {
       drawnNumbers.value.push(drawnNumber)
       lastDrawnNumber.value = drawnNumber
 
-      // 保存到localStorage
       saveState()
-
-      ElMessage({
-        message: `抽出號碼：${drawnNumber}`,
-        type: 'success'
-      })
     }
 
-    // 重置遊戲
     const resetGame = () => {
       localStorage.removeItem('numberDrawState')
       initializeGame()
-      ElMessage({
-        message: '遊戲已重置',
-        type: 'info'
-      })
     }
 
-    // 保存狀態到localStorage
     const saveState = () => {
       const state = {
         drawnNumbers: drawnNumbers.value,
@@ -153,49 +105,75 @@ export default {
 
 <style scoped>
 .number-draw-container {
-  max-width: 800px;
+  max-width: 700px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 15px;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
 }
 
 .result-section {
   text-align: center;
-  margin: 20px 0;
+  margin: 15px 0;
+}
+
+.result-section h3 {
+  margin: 0;
+  color: #666;
+  font-size: 1.1rem;
 }
 
 .last-number {
-  font-size: 48px;
+  font-size: 42px;
   font-weight: bold;
   color: #409EFF;
   margin: 10px 0;
+  line-height: 1.2;
 }
 
 .numbers-grid {
-  margin: 20px 0;
+  margin: 15px 0 0 0;
+}
+
+.numbers-grid h3 {
+  margin: 0 0 10px 0;
+  color: #666;
+  font-size: 1.1rem;
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 10px;
-  margin-top: 10px;
+  justify-items: center;
 }
 
 .number-box {
-  aspect-ratio: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  border: 2px solid #dcdfe6;
-  border-radius: 8px;
+  font-size: 30px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
   transition: all 0.3s;
+  background-color: #fff;
+  height: 60px;
+  width: 110px;
 }
 
 .number-box.drawn {
@@ -204,16 +182,11 @@ export default {
   border-color: #409EFF;
 }
 
-.statistics {
-  margin-top: 20px;
+:deep(.el-card__header) {
+  padding: 15px;
 }
 
-.stat-item {
-  margin-bottom: 20px;
-}
-
-.drawn-number-tag,
-.remaining-number-tag {
-  margin: 4px;
+:deep(.el-card__body) {
+  padding: 15px;
 }
 </style>
